@@ -75,7 +75,7 @@ public class Line : MonoBehaviour
             PolygonCollider2D col = r.gameObject.AddComponent<PolygonCollider2D>();
             col.points = posiciones2.ToArray();
 
-            //col.gameObject.AddComponent<Rigidbody2D>();
+            col.gameObject.AddComponent<Rigidbody2D>();
         }
     }
 }
