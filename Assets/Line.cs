@@ -13,69 +13,111 @@ public class Line : MonoBehaviour
     Vector3 inPoint;
     Vector3 outPoint;
     public Color color;
+    public PlayerController playerController;
+    private bool isnewLine = true;
+
+
+
+    void Start()
+    {
+        playerController = player.GetComponent<PlayerController>();
+
+
+    }
 
     void Update()
     {
-
-
-        if ((Input.GetButtonDown("Horizontal")) || (Input.GetButtonDown("Vertical")))
+        if ((playerController.movementKeyPressed == true))
         {
+            if (isnewLine == true)
+            {
 
-            StartCoroutine(draw());
+
+                if ((Input.GetButtonDown("Horizontal")) || (Input.GetButtonDown("Vertical")))
+                {
+                    StartCoroutine(draw());
+
+                }
+            }
+
         }
 
+        if (Input.GetButtonDown("Jump"))
+        {
+            if (isnewLine == false)
+            {
+                isnewLine = true;
+                playerController.movementKeyPressed = true;
+            }
+            else
+                isnewLine = false;
+            playerController.movementKeyPressed = false;
 
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            playerController.movementKeyPressed = false;
+        }
 
 
     }
     Vector3 newVertex;
     Vector3 lastVertex;
+
     IEnumerator draw()
     {
-
-
         LineRenderer r = new GameObject().AddComponent<LineRenderer>();
+        isnewLine = false;
         r.transform.SetParent(transform);
         r.startWidth = 0.1f;
         r.endWidth = 0.1f;
-
         r.material.color = color;
+        List<Vector3> positions = new List<Vector3>();
 
-        List<Vector3> posiciones = new List<Vector3>();
 
 
-        while ((Input.GetButton("Horizontal")) || (Input.GetButton("Vertical")))
+
+        while (playerController.movementKeyPressed == true)
         {
             newVertex = player.transform.position + Vector3.forward * 2;
-            if (Vector3.Distance(lastVertex, newVertex) >= vertexPrecision) //Esto mejora la calidad de la linea
+            if (Vector3.Distance(lastVertex, newVertex) <= vertexPrecision) //Esto mejora la calidad de la linea
             {
-                posiciones.Add(newVertex);
-                r.positionCount = posiciones.Count;
-                r.SetPositions(posiciones.ToArray());
+                positions.Add(newVertex);
+                r.positionCount = positions.Count;
+                r.SetPositions(positions.ToArray());
                 lastVertex = newVertex;
+
             }
             yield return new WaitForEndOfFrame();
         }
         r.useWorldSpace = false;
 
+
+
+
         if (usePhysics)
         {
             List<Vector2> posiciones2 = new List<Vector2>();
 
-            for (int i = 0; i < posiciones.Count; i++)
+            for (int i = 0; i < positions.Count; i++)
             {
-                posiciones2.Add(new Vector2(posiciones[i].x, posiciones[i].y));
+                posiciones2.Add(new Vector2(positions[i].x, positions[i].y));
             }
 
-            for (int i = posiciones.Count - 1; i > 0; i--) // Esta parte permite colliders concavos
+            for (int i = positions.Count - 1; i > 0; i--) // Esta parte permite colliders concavos
             {
-                posiciones2.Add(new Vector2(posiciones[i].x, posiciones[i].y + colliderThickness));
+                posiciones2.Add(new Vector2(positions[i].x, positions[i].y + colliderThickness));
             }
 
             PolygonCollider2D col = r.gameObject.AddComponent<PolygonCollider2D>();
+            col.isTrigger = true;
             col.points = posiciones2.ToArray();
+            col.gameObject.tag = "Player";
 
-            col.gameObject.AddComponent<Rigidbody2D>();
+
+            //col.gameObject.AddComponent<Rigidbody2D>();
         }
     }
+
 }
