@@ -8,7 +8,9 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     public bool movementKeyPressed = true;
-    
+    public bool stopmoving = false;
+
+
 
     void Start()
     {
@@ -51,57 +53,74 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButtonDown("Jump"))
+
+
+
+        if (stopmoving == false)
         {
-            if (movementKeyPressed == false)
-                movementKeyPressed = true;
-            else
-                movementKeyPressed = false;
+            if (Input.GetButtonDown("Jump"))
+            {
+                if (movementKeyPressed == false)
+                    movementKeyPressed = true;
+                else
+                    movementKeyPressed = false;
+            }
+
+            if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
+
+            {
+                rb.velocity = new Vector2(transform.localScale.x * speed, 0);
+
+
+            }
+
+            if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+
+            {
+                rb.velocity = new Vector2(-transform.localScale.x * speed, 0);
+
+            }
+
+            if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
+
+            {
+                rb.velocity = new Vector2(0, -transform.localScale.y * speed);
+
+            }
+
+            if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
+
+            {
+                rb.velocity = new Vector2(0, transform.localScale.y * speed);
+
+            }
         }
-
-        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
-
-        {   
-            rb.velocity = new Vector2(transform.localScale.x * speed, 0);
-
-            
-        }
-
-        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
-
-        {
-            rb.velocity = new Vector2(-transform.localScale.x * speed,0);
-         
-        }
-
-        if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
-
-        {
-            rb.velocity = new Vector2(0, -transform.localScale.y * speed);
-           
-        }
-
-        if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
-
-        {
-            rb.velocity = new Vector2(0, transform.localScale.y*speed);
-           
-        }
-
-
-              
-
-
     }
 
     void OnTriggerEnter2D(Collider2D col)
     {
 
-        if (col.gameObject.tag == "Player")
+        if (col.gameObject.tag == "Border")
         {
-            Debug.Log("Do something here");
+            Debug.Log("Hit Border,- STOP!");
+     
+            movementKeyPressed = false;
+            rb.velocity = new Vector2(0, 0);
+
         }
     }
+
+
+
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        Debug.Log("Exit on Border....");
+
+
+       
+    }
+
 
 
 

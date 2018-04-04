@@ -81,7 +81,7 @@ public class Line : MonoBehaviour
         while (playerController.movementKeyPressed == true)
         {
             newVertex = player.transform.position + Vector3.forward * 2;
-            if (Vector3.Distance(lastVertex, newVertex) <= vertexPrecision) //Esto mejora la calidad de la linea
+            if (Vector3.Distance(lastVertex, newVertex) >= vertexPrecision) //Esto mejora la calidad de la linea
             {
                 positions.Add(newVertex);
                 r.positionCount = positions.Count;
@@ -113,7 +113,7 @@ public class Line : MonoBehaviour
             PolygonCollider2D col = r.gameObject.AddComponent<PolygonCollider2D>();
             col.isTrigger = true;
             col.points = posiciones2.ToArray();
-            col.gameObject.tag = "Player";
+            col.gameObject.tag = "Border";
 
 
             //col.gameObject.AddComponent<Rigidbody2D>();
